@@ -36,6 +36,7 @@ class Client:
 
         # String
         self.langue = ""
+        self.langueCode = "EN"  # Valor padrão para evitar erro de atributo
         self.loop = loop
         self.packages = ByteArray()
         self.roomName = ""
@@ -269,7 +270,8 @@ class Client:
         self.shopPanel = ShopPanel(self, self.server)
         from modules.ParseShop import ParseShop
         self.parseShop = ParseShop(self, self.server)
-        self.parseSkill = module.ParseSkill(self, self.server)
+        from modules.ParseSkill import ParseSkill
+        self.parseSkill = ParseSkill(self, self.server)
         self.parsePackets = module.ParsePackets(self, self.server)
         self.parseCommands = module.ParseCommands(self, self.server)
         self.others = module.Others(self)
@@ -2081,7 +2083,8 @@ class Server(asyncio.Transport):
             player.tribulle = module.Tribulle(player, self)
             from modules.ParseShop import ParseShop
             player.parseShop = ParseShop(player, self)
-            player.parseSkill = module.ParseSkill(player, self)
+            from modules.ParseSkill import ParseSkill
+            player.parseSkill = ParseSkill(player, self)
             player.parsePackets = module.ParsePackets(player, self)
             player.parseCommands = module.ParseCommands(player, self)
             player.others = module.Others(player)
