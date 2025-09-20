@@ -5,7 +5,7 @@ import re, json, random, urllib, traceback, time as _time, base64, hashlib, stru
 from utils import Utils
 from ByteArray import ByteArray
 from Identifiers import Identifiers
-from Captcha import Captcha
+from utils.Captcha import Captcha
 from Lua import Lua
 from Exceptions import *
 
@@ -584,34 +584,34 @@ class ParsePackets:
                 look[0] = int(look[0])
                 count = 0
                 if self.client.shopFraises >= self.client.fullLookPrice:
-                      for visual in look[1].split(","):
-                            if not visual == "0":
-                                item, customID = visual.split("_", 1) if "_" in visual else [visual, ""] 
-                                item = int(item) 
-                                itemID = self.client.getFullItemID(count, item) 
-                                itemInfo = self.client.getItemInfo(count, item) 
-                            if len(self.client.shopItems) == 1: 
-                                if not self.client.shop.checkInShop(itemID):
-                                	self.client.shopItems += str(itemID)+"_" if self.client.shopItems == "" else "," + str(itemID)+"_"
-                                	if not itemID in self.client.custom:
-                                     		self.client.custom.append(itemID)
-                                	else:
-                                    		if not str(itemID) in self.client.custom:
-                                          		self.client.custom.append(str(itemID))
-                            else:
-                            	if not self.client.shop.checkInShop(str(itemID)):
-                                 	self.client.shopItems += str(itemID)+"_" if self.client.shopItems == "" else "," + str(itemID)+"_"
-                                 	if not itemID in self.client.custom:
-                                      		self.client.custom.append(itemID)
-                                 	else:
-                                      		if not str(itemID) in self.client.custom:
-                                           		self.client.custom.append(str(itemID))
-                      count += 1
+                    for visual in look[1].split(","):
+                        if not visual == "0":
+                            item, customID = visual.split("_", 1) if "_" in visual else [visual, ""] 
+                            item = int(item) 
+                            itemID = self.client.getFullItemID(count, item) 
+                            itemInfo = self.client.getItemInfo(count, item) 
+                        if len(self.client.shopItems) == 1: 
+                            if not self.client.shop.checkInShop(itemID):
+                                self.client.shopItems += str(itemID)+"_" if self.client.shopItems == "" else "," + str(itemID)+"_"
+                                if not itemID in self.client.custom:
+                                    self.client.custom.append(itemID)
+                                else:
+                                    if not str(itemID) in self.client.custom:
+                                        self.client.custom.append(str(itemID))
+                        else:
+                            if not self.client.shop.checkInShop(str(itemID)):
+                                self.client.shopItems += str(itemID)+"_" if self.client.shopItems == "" else "," + str(itemID)+"_"
+                                if not itemID in self.client.custom:
+                                    self.client.custom.append(itemID)
+                                else:
+                                    if not str(itemID) in self.client.custom:
+                                        self.client.custom.append(str(itemID))
+                        count += 1
 
-                      self.client.clothes.append("%02d/%s/%s/%s" %(len(self.client.clothes), lookBuy, "78583a", "fade55" if self.client.shamanSaves >= 1000 else "95d9d6"))
-                      furID = self.client.getFullItemID(22, look[0])
-                      self.client.shopItems += str(furID) if self.client.shopItems == "" else "," + str(furID)
-                      self.client.shopFraises -= self.client.fullLookPrice
+                    self.client.clothes.append("%02d/%s/%s/%s" %(len(self.client.clothes), lookBuy, "78583a", "fade55" if self.client.shamanSaves >= 1000 else "95d9d6"))
+                    furID = self.client.getFullItemID(22, look[0])
+                    self.client.shopItems += str(furID) if self.client.shopItems == "" else "," + str(furID)
+                    self.client.shopFraises -= self.client.fullLookPrice
 
                 self.client.shop.sendShopList(False)
 
@@ -664,6 +664,16 @@ class ParsePackets:
                 
         elif C == Identifiers.recv.Login.C:
             if CC == Identifiers.recv.Login.Create_Account:
+                # Tratamento para requisição de arquivo SWF
+                try:
+                    swf_request = packet.readUTF()
+                    if swf_request.startswith('file:///') and swf_request.endswith('.swf'):
+                        print(f"[SWF] Requisição de arquivo SWF recebida: {swf_request}")
+                        # Opcional: responder com o arquivo SWF correto ou apenas ignorar
+                        return
+                except Exception as e:
+                    pass
+                # Fluxo normal de criação de conta
                 playerName, password, email, captcha, url = Utils.parsePlayerName(packet.readUTF()), packet.readUTF(), packet.readUTF().lower(), packet.readUTF(), packet.readUTF()
                 if self.client.checkTimeAccount():
                     createTime = _time.time() - self.client.CRTTime
