@@ -12,6 +12,19 @@ import modules as module
 from utils import *
 from modules import *
 
+# Imports explícitos para corrigir erros de símbolos não definidos
+from modules.ByteArray import ByteArray
+from modules.Identifiers import Identifiers
+from modules.ModoPwet import ModoPwet
+from modules.ShopPanel import ShopPanel
+from utils.Utils import Utils
+from utils.Priv import PrivLevel
+from utils.Config import Config
+from modules.Lua import Lua
+import string
+import re
+from urllib.request import urlopen
+
 loop = asyncio.get_event_loop()
 
 # Library
@@ -254,7 +267,8 @@ class Client:
         self.tribulle = module.Tribulle(self, self.server)
         self.modoPwet = ModoPwet(self, self.server)
         self.shopPanel = ShopPanel(self, self.server)
-        self.parseShop = module.ParseShop(self, self.server)
+        from modules.ParseShop import ParseShop
+        self.parseShop = ParseShop(self, self.server)
         self.parseSkill = module.ParseSkill(self, self.server)
         self.parsePackets = module.ParsePackets(self, self.server)
         self.parseCommands = module.ParseCommands(self, self.server)
@@ -2065,7 +2079,8 @@ class Server(asyncio.Transport):
         reload(module)
         for player in self.players.values():
             player.tribulle = module.Tribulle(player, self)
-            player.parseShop = module.ParseShop(player, self)
+            from modules.ParseShop import ParseShop
+            player.parseShop = ParseShop(player, self)
             player.parseSkill = module.ParseSkill(player, self)
             player.parsePackets = module.ParsePackets(player, self)
             player.parseCommands = module.ParseCommands(player, self)
