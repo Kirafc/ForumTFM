@@ -272,7 +272,8 @@ class Client:
         self.parseShop = ParseShop(self, self.server)
         from modules.ParseSkill import ParseSkill
         self.parseSkill = ParseSkill(self, self.server)
-        self.parsePackets = module.ParsePackets(self, self.server)
+        from modules.ParsePackets import ParsePackets
+        self.parsePackets = ParsePackets(self, self.server)
         self.parseCommands = module.ParseCommands(self, self.server)
         self.others = module.Others(self)
         self.missions = module.Missions(self, self.server)
